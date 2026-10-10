@@ -1,1 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Online iLQR-MPC with Whole-Body Control for Robust Humanoid Locomotion</title>
+<meta name="description" content="A hierarchical controller combining constrained iLQR-MPC over centroidal dynamics with a task-priority whole-body controller, validated on the Unitree G1 humanoid in MuJoCo.">
+<link rel="stylesheet" href="assets/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%232a78d6'/></svg>">
+<script>
+/* Stamp the theme before first paint so there is no flash.
+   ?theme=dark / ?theme=light forces one, which is handy for screenshots. */
+(function () {
+  try {
+    var forced = new URLSearchParams(location.search).get('theme');
+    var saved = localStorage.getItem('theme');
+    var dark = forced ? forced === 'dark'
+             : saved  ? saved === 'dark'
+                      : matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+  } catch (e) {
+    document.documentElement.dataset.theme = 'light';
+  }
+})();
+</script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="progress" id="progress" aria-hidden="true"></div>
 
+<header class="nav">
+  <div class="nav-inner">
+    <a class="nav-brand" href="#top">iLQR-MPC <span>+ WBC</span></a>
+    <nav class="nav-links" aria-label="Sections">
+      <a href="#abstract">Abstract</a>
+      <a href="#results">Results</a>
+      <a href="#performance">Performance</a>
+      <a href="#bibtex">BibTeX</a>
+    </nav>
+    <button class="theme-toggle" id="themeToggle" type="button"
+            aria-label="Switch colour theme" title="Switch colour theme">
+      <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+        <path class="ico-sun" d="M12 4V2m0 20v-2m8-8h2M2 12h2m13.66-5.66l1.41-1.41M4.93 19.07l1.41-1.41m0-11.32L4.93 4.93m14.14 14.14l-1.41-1.41M12 7a5 5 0 100 10 5 5 0 000-10z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+        <path class="ico-moon" d="M20 14.5A8.5 8.5 0 019.5 4a8.5 8.5 0 1010.5 10.5z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- ───────────────────────────── HERO ───────────────────────────── -->
+<section class="hero" id="top">
+  <div class="wrap">
+    <p class="eyebrow">IEEE Transactions · Under review</p>
+    <h1>Online iLQR-MPC with Whole-Body Control<br class="br-lg"> for Robust Humanoid Locomotion</h1>
+    <!-- TODO(投稿前): 双盲送审时保留匿名;录用后替换为作者与单位 -->
+    <p class="authors">Anonymous Authors</p>
+    <p class="affil">Manuscript under double-blind review</p>
+
+    <div class="actions">
+      <a class="btn btn-primary" href="#" id="pdfLink">
+        <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><path d="M14 3v5h5M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8l-5-5z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
+        Paper (PDF)
+      </a>
+      <a class="btn" href="#" id="arxivLink">arXiv</a>
+      <a class="btn" href="#" id="codeLink">Code</a>
+      <button class="btn" type="button" data-copy-bib>BibTeX</button>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────────────────────── ABSTRACT ───────────────────────────── -->
+<section class="section" id="abstract">
+  <div class="wrap wrap-narrow">
+    <h2><span class="kicker">01</span>Abstract</h2>
+    <p class="lede">
+      Enforcing nonlinear contact constraints in receding-horizon model predictive control (MPC) for
+      humanoid locomotion remains an open challenge. Reduced-order linear formulations sacrifice
+      fidelity; nonlinear solvers struggle to respect friction cones, unilateral contact, and
+      zero-moment-point bounds at real-time rates.
+    </p>
+    <p>
+      We present a hierarchical controller that combines constrained iLQR-MPC with whole-body control
+      (WBC). The MPC operates over centroidal dynamics with footstep location as a state, co-optimising
+      contact forces and footholds within a single receding-horizon problem. Swing-foot equality
+      constraints are enforced via augmented Lagrangian penalties, while inequality constraints are
+      enforced via relaxed logarithmic barriers. A whole-body controller then reconciles the MPC plan
+      with full-body dynamics and maps the result to joint torques, preserving contact feasibility
+      throughout.
+    </p>
+    <p>
+      Two layers, one plan: a reduced-model planner co-optimises contact forces and footholds over a
+      receding horizon, and a whole-body controller realises that plan on the full 35-DoF multibody
+      model.
+    </p>
+    <p>
+      In MuJoCo simulations on the Unitree G1 humanoid, the framework achieves stable locomotion and
+      recovers from sagittal pushes of up to <strong>245 N</strong> and lateral pushes of up to
+      <strong>175 N</strong> by jointly adapting contact forces and footstep placement online.
+    </p>
+  </div>
+</section>
+
+<!-- ───────────────────────────── RESULTS ───────────────────────────── -->
+<section class="section" id="results">
+  <div class="wrap">
+    <h2><span class="kicker">02</span>Results</h2>
+    <p class="section-sub">
+      All clips are recorded in MuJoCo on the Unitree G1. Impulsive disturbances are applied to the
+      torso as a constant force of 0.12&nbsp;s duration at t&nbsp;=&nbsp;15.0&nbsp;s during forward
+      walking at 0.1&nbsp;m/s. Use the speed control under each clip to slow the recovery down.
+    </p>
+
+    <!-- 2.1 -->
+    <div class="subsection">
+      <h3 class="sub-h">2.1&ensp;Steady-state locomotion</h3>
+      <p class="sub-p">
+        Unperturbed forward walking at 0.1&nbsp;m/s for 40&nbsp;s (&asymp;100 steps).
+      </p>
+      <div class="video-grid" data-grid="steady"></div>
+    </div>
+
+    <!-- 2.2 -->
+    <div class="subsection">
+      <h3 class="sub-h">2.2&ensp;Push recovery</h3>
+      <p class="sub-p">
+        The push magnitude is increased incrementally until failure, defined as any non-foot body link
+        contacting the ground. In every direction the recovery is produced by the same mechanism: the
+        iLQR-MPC re-optimises footstep placement and contact-force distribution jointly over the
+        receding horizon, and the WBC refines the updated plan into joint torques. Sagittal and lateral
+        clips show the maximum recoverable force in each direction; oblique and force&ndash;torque clips
+        are illustrative examples only, not limit cases.
+      </p>
+
+      <div class="hero-figure">
+        <span class="hero-value">245 N</span>
+        <span class="hero-label">Maximum recoverable forward push before failure</span>
+      </div>
+
+      <h4 class="sub-sub">Sagittal &mdash; maximum recoverable</h4>
+      <div class="video-grid" data-grid="sagittal"></div>
+
+      <h4 class="sub-sub">Lateral &mdash; maximum recoverable</h4>
+      <p class="sub-p sub-p--tight">
+        A pronounced asymmetry: pushes directed <em>toward</em> the stance leg (&minus;y, 175&nbsp;N)
+        are tolerated more than twice as well as pushes directed <em>away</em> from it
+        (+y, 80&nbsp;N). With the left leg in stance, a right-to-left push drives the CoM away from the
+        support foot, shrinking the effective support polygon and leaving footstep adjustment as the
+        sole recovery mechanism.
+      </p>
+      <div class="video-grid" data-grid="lateral"></div>
+
+      <h4 class="sub-sub">Oblique &mdash; illustrative example</h4>
+      <p class="sub-p sub-p--tight">
+        Simultaneous sagittal and lateral components (130&nbsp;N&nbsp;+&nbsp;50&nbsp;N). The sagittal
+        mode remains dominant and the controller decouples the two axes through coordinated footstep
+        and wrench adjustment.
+      </p>
+      <div class="video-grid" data-grid="oblique"></div>
+
+      <h4 class="sub-sub">Force + torque &mdash; illustrative example</h4>
+      <div class="video-grid" data-grid="torque"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────────────────────── PERFORMANCE ───────────────────────────── -->
+<section class="section section-alt" id="performance">
+  <div class="wrap">
+    <h2><span class="kicker">03</span>Computational performance</h2>
+    <p class="section-sub">
+      Measured over approximately 9,000 MPC solves (27,000 AL outer iterations) during the
+      disturbance-rejection experiments, on an Intel Core i5-12400F.
+    </p>
+
+    <div class="chart-grid">
+      <figure class="chart">
+        <figcaption class="chart-head">
+          <span class="chart-title">Constrained MPC solve</span>
+          <span class="chart-sub">8.9 ms total &middot; 100 Hz control interval (10 ms)</span>
+        </figcaption>
+        <ul class="bars" data-chart="solve"></ul>
+      </figure>
+      <figure class="chart">
+        <figcaption class="chart-head">
+          <span class="chart-title">Single iLQR iteration</span>
+          <span class="chart-sub">2.24 ms total &middot; N = 10 stages</span>
+        </figcaption>
+        <ul class="bars" data-chart="ilqr"></ul>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────────────────────── BIBTEX ───────────────────────────── -->
+<section class="section" id="bibtex">
+  <div class="wrap wrap-narrow">
+    <h2><span class="kicker">04</span>BibTeX</h2>
+    <div class="code-block">
+      <button class="copy-btn" type="button" data-copy-bib>Copy</button>
+      <pre id="bibtexSrc">@article{anonymous2026ilqrmpc,
+  title   = {Constrained {iLQR-MPC} with Whole-Body Control for
+             Robust Humanoid Locomotion},
+  author  = {Anonymous},
+  journal = {IEEE Transactions on Robotics},
+  year    = {2026},
+  note    = {Under review}
+}</pre>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <p>
+      Simulation results on the Unitree G1 humanoid in MuJoCo. Page built as a static site — no
+      trackers, no external dependencies.
+    </p>
+  </div>
+</footer>
+
+<script src="data/videos.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>
