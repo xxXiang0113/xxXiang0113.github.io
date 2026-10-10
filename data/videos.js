@@ -36,13 +36,13 @@ window.PAGE_DATA = {
         {
           title: 'Forward push recovery',
           badge: '+x  245 N',
-          src: 'videos/push-x-pos.mp4',
+          src: 'videos/pushxp.mp4',
           poster: 'img/push-x-pos.png'
         },
         {
           title: 'Backward push recovery',
           badge: '−x  205 N',
-          src: 'videos/push-x-neg.mp4',
+          src: 'videos/pushxn.mp4',
           poster: 'img/push-x-neg.png'
         }
       ]
@@ -54,13 +54,13 @@ window.PAGE_DATA = {
         {
           title: 'Right-to-left push recovery',
           badge: '+y  80 N',
-          src: 'videos/push-y-pos.mp4',
+          src: 'videos/pushyp.mp4',
           poster: 'img/push-y-pos.png'
         },
         {
           title: 'Left-to-right push recovery',
           badge: '−y  175 N',
-          src: 'videos/push-y-neg.mp4',
+          src: 'videos/pushyn.mp4',
           poster: 'img/push-y-neg.png'
         }
       ]
@@ -72,13 +72,13 @@ window.PAGE_DATA = {
         {
           title: 'Oblique push recovery — +x +y',
           badge: '+x+y  130+50 N',
-          src: 'videos/push-xy-pos.mp4',
+          src: 'videos/pushxpyp.mp4',
           poster: 'img/push-xy-pos.png'
         },
         {
           title: 'Oblique push recovery — −x −y',
           badge: '−x−y  130+50 N',
-          src: 'videos/push-xy-neg.mp4',
+          src: 'videos/pushxnyn.mp4',
           poster: 'img/push-xy-neg.png'
         }
       ]
@@ -90,7 +90,7 @@ window.PAGE_DATA = {
         {
           title: 'Force + torque perturbation',
           badge: '+x 100 N  τz 30 N·m',
-          src: 'videos/push-x-torque.mp4',
+          src: 'videos/pushxpztorque.mp4',
           poster: 'img/push-x-torque.png'
         }
       ]
