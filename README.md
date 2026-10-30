@@ -1,6 +1,6 @@
-# 论文项目主页 — Online iLQR-MPC with Whole-Body Control
-
 <!--
+# Online iLQR-MPC with Whole-Body Control — Project Page
+
 静态单页站点,零依赖、零构建、零追踪脚本。直接双击 `index.html` 就能看,也可以原样丢到
 GitHub Pages / 任意静态托管上。
 
@@ -12,7 +12,7 @@ GitHub Pages / 任意静态托管上。
 两处文件一一对应,只是命名不同:
 -->
 
-| Scenario | Direction | Loaded by page (`videos/`) | Source file (`视频/`) | Page badge |
+| Scenario | Direction | Loaded by page (`videos/`) | Source file (raw, not uploaded) | Page badge |
 |---|---|---|---|---|
 | Steady-state walking | Forward | `steady-walk.mp4` | `steady-walk.mp4` | 0.1 m/s |
 | Gait, top-down | — | `steady-topdown.mp4` | `steady-topdown.mp4` | TOP-DOWN |
